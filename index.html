@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Siege Architect — design a castle, then smash theirs</title>
+<meta name="description" content="Siege Architect is a physics siege game for Android: design your own castle from a material budget, pick your squad, and fire arcing shots at a fully destructible enemy fortress. Play the demo in your browser.">
+<link rel="icon" href="icon-512.png">
+<meta property="og:title" content="Siege Architect">
+<meta property="og:description" content="Design your own castle from a material budget, then find out whether you built better than your opponent did.">
+<meta property="og:image" content="feature-graphic.png">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f5f0;
+    --panel: #ffffff;
+    --panel-2: #efece4;
+    --ink: #1b2430;
+    --ink-dim: #4d5a6b;
+    --rule: #d9d4ca;
+    --accent: #b07d12;
+    --accent-ink: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141b25;
+      --panel: #1b2430;
+      --panel-2: #202b3a;
+      --ink: #f5f1e8;
+      --ink-dim: #a9b3c1;
+      --rule: #2a3646;
+      --accent: #f4b942;
+      --accent-ink: #1b2430;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.65 "Trebuchet MS", Verdana, "Segoe UI", system-ui, sans-serif;
+  }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: var(--accent); }
+  .wrap { max-width: 60rem; margin: 0 auto; padding: 0 1.25rem; }
+
+  /* Hero ------------------------------------------------------------- */
+  .hero {
+    background: var(--panel);
+    border-bottom: 1px solid var(--rule);
+    padding: 3rem 0 2.5rem;
+  }
+  .hero-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+    align-items: center;
+  }
+  @media (min-width: 52rem) {
+    .hero-grid { grid-template-columns: 8rem 1fr; }
+  }
+  .hero img.icon {
+    width: 8rem; height: 8rem;
+    border-radius: 1.4rem;
+    border: 1px solid var(--rule);
+  }
+  h1 { font-size: clamp(2rem, 6vw, 3rem); margin: 0 0 .35rem; letter-spacing: .01em; }
+  .tagline { font-size: 1.15rem; color: var(--ink-dim); margin: 0 0 1.5rem; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
+  .btn {
+    display: inline-block;
+    padding: .8rem 1.4rem;
+    border-radius: .5rem;
+    text-decoration: none;
+    font-weight: bold;
+    border: 1px solid var(--accent);
+    min-height: 3rem;
+    line-height: 1.5rem;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-secondary { background: transparent; color: var(--accent); }
+  /* Play badge placeholder — swap for the official badge once the app is live. */
+  .badge-slot {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .6rem 1.1rem;
+    border: 2px dashed var(--rule);
+    border-radius: .5rem;
+    color: var(--ink-dim);
+    font-size: .9rem;
+    min-height: 3rem;
+  }
+  .badge-slot strong { color: var(--ink); display: block; font-size: 1rem; }
+
+  /* Sections --------------------------------------------------------- */
+  section { padding: 3rem 0; border-bottom: 1px solid var(--rule); }
+  h2 { font-size: 1.5rem; margin: 0 0 1.25rem; }
+  h3 { font-size: 1.05rem; margin: 0 0 .35rem; }
+  .features {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 40rem) { .features { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 60rem) { .features { grid-template-columns: 1fr 1fr 1fr; } }
+  .feature {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: .6rem;
+    padding: 1.1rem 1.2rem;
+  }
+  .feature p { margin: 0; color: var(--ink-dim); }
+
+  .shots {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 40rem) { .shots { grid-template-columns: 1fr 1fr; } }
+  figure { margin: 0; }
+  figure img { border: 1px solid var(--rule); border-radius: .4rem; }
+  figcaption { color: var(--ink-dim); font-size: .9rem; margin-top: .4rem; }
+
+  .note {
+    background: var(--panel-2);
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.1rem;
+    border-radius: 0 .4rem .4rem 0;
+  }
+  .note p { margin: 0 0 .6rem; }
+  .note p:last-child { margin-bottom: 0; }
+
+  footer { padding: 2rem 0 3rem; color: var(--ink-dim); font-size: .9rem; }
+  footer a { margin-right: 1rem; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <img class="icon" src="icon-512.png" alt="Siege Architect icon" width="512" height="512">
+    <div>
+      <h1>Siege Architect</h1>
+      <p class="tagline">Design a castle, then smash theirs. Offline physics siege battles for Android.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="play/">Play the web demo</a>
+        <a class="btn btn-secondary" href="#screenshots">See it first</a>
+        <span class="badge-slot" title="Replace with the official Google Play badge once the app is published">
+          <span>
+            <strong>Google Play badge goes here</strong>
+            coming to Android — link the store page once it is live
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section>
+    <div class="wrap">
+      <h2>Most siege games hand you a castle. This one hands you a budget and a grid.</h2>
+      <div class="features">
+        <div class="feature">
+          <h3>Design the castle, then live in it</h3>
+          <p>A 10×12 grid, four materials, one budget. Wood is cheap and burns. Stone is the
+            honest middle. Iron shrugs off arrows. TNT is a decision you will regret at least
+            once.</p>
+        </div>
+        <div class="feature">
+          <h3>Fully destructible physics</h3>
+          <p>Every block is a real body in a physics simulation. Walls sag, towers topple onto
+            the units underneath. Nothing is a scripted animation — if it fell over, it fell
+            over because of where you put it.</p>
+        </div>
+        <div class="feature">
+          <h3>Six units, six answers</h3>
+          <p>Archer, cannoneer, bomber, fire mage, catapult and frost mage. Flat arrows for
+            exposed targets, bombs lobbed over a wall you cannot shoot through, frost that
+            makes a block brittle for the next hit. Pick four per battle.</p>
+        </div>
+        <div class="feature">
+          <h3>A 30-level campaign of real architecture</h3>
+          <p>Every enemy is a different building, not a different health bar: a squat iron
+            bunker, a tower on stilts, a TNT trap dressed up as a treasury.</p>
+        </div>
+        <div class="feature">
+          <h3>Quick Battle</h3>
+          <p>No campaign, no unlocks — pick a difficulty, get a freshly generated opponent
+            castle, play a single match. Good for five minutes on a train.</p>
+        </div>
+        <div class="feature">
+          <h3>Built for a phone</h3>
+          <p>Landscape, one thumb, drag to aim and release to fire. Every control is
+            finger-sized. No account, no login, no cloud save — the game plays offline.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screenshots">
+    <div class="wrap">
+      <h2>Screenshots</h2>
+      <div class="shots">
+        <figure>
+          <img src="screenshots/01-menu.png" alt="Siege Architect main menu" loading="lazy">
+          <figcaption>Main menu</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/02-campaign.png" alt="Campaign map with thirty levels" loading="lazy">
+          <figcaption>Campaign — thirty keeps to break</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/03-architect.png" alt="Architect Mode castle editor" loading="lazy">
+          <figcaption>Architect Mode — design your own castle</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/04-loadout.png" alt="Loadout screen assigning units to slots" loading="lazy">
+          <figcaption>Loadout — assign your squad to the slots</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/05-battle.png" alt="A siege battle in progress" loading="lazy">
+          <figcaption>Battle — physics siege in progress</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Play it right now, in this browser</h2>
+      <p>
+        The full game runs in a browser — the same code as the Android build, drawn with the
+        same procedural art and the same physics. Mouse or touch, landscape works best.
+      </p>
+      <p class="cta-row"><a class="btn btn-primary" href="play/">Open the web demo</a></p>
+      <div class="note" style="margin-top:1.5rem">
+        <p><strong>About adverts.</strong> The Android app is free and is paid for by
+          advertising: an optional video you can watch to double the coins from a battle, and
+          a short break between battles. Nothing in the game is locked behind watching one,
+          and no advert ever interrupts a battle in progress.</p>
+        <p><strong>The web demo shows no adverts at all</strong> — it contains no advertising
+          SDK and makes no ad requests. What the Android app sends, and how to opt out, is set
+          out in the <a href="privacy.html">privacy policy</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Contact</h2>
+      <p>
+        Siege Architect is an original game by Anuj Gupta — original code, procedurally drawn
+        art and synthesized sound. Questions, bugs, or blueprint codes you are proud of:
+        <a href="mailto:anujgupta017@gmail.com">anujgupta017@gmail.com</a>.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      <a href="privacy.html">Privacy policy</a>
+      <a href="play/">Web demo</a>
+      <a href="mailto:anujgupta017@gmail.com">Email</a>
+    </p>
+    <p>&copy; 2026 Anuj Gupta. Google Play and the Google Play logo are trademarks of Google LLC.</p>
+  </div>
+</footer>
+
+</body>
+</html>

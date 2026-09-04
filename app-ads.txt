@@ -1,0 +1,29 @@
+# app-ads.txt — Authorized Sellers for Apps (IAB Tech Lab)
+#
+# PLACEHOLDER. The line below is not yet valid: replace pub-XXXXXXXXXXXXXXXX with
+# YOUR AdMob publisher id before this file does anything useful.
+#
+# Where to get it:
+#   1. https://admob.google.com -> Apps -> Siege Architect -> App settings
+#   2. Set "Developer website" to the URL this site is published at.
+#   3. AdMob then shows the exact line to publish here. Paste it verbatim,
+#      replacing the placeholder line below, push the site, and press
+#      "Check for updates" in AdMob.
+#
+# Your publisher id is the same digits that appear in the middle of your AdMob
+# application id: ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY  ->  pub-XXXXXXXXXXXXXXXX
+#
+# What it is for: it proves to ad buyers that this developer is authorised to sell
+# this app's ad inventory. Unverified inventory gets fewer bids, so this file is
+# worth real money. It is not a launch blocker — ads serve without it.
+#
+# Caveat for GitHub Pages: Google looks for app-ads.txt at the DOMAIN ROOT,
+# https://<domain>/app-ads.txt. A GitHub Pages *project* site serves this file at
+# /siege-architect-site/app-ads.txt, which will NOT verify. See site/README.md
+# step 6 for the two ways round that.
+#
+# Full spec: https://iabtechlab.com/ads-txt/
+# Google's guide: https://support.google.com/admob/answer/9363762
+#
+# ---- replace the line below ----
+google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
