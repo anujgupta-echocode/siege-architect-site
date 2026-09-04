@@ -6,7 +6,7 @@ for, in one go:
 | What | Why you need it | File |
 | --- | --- | --- |
 | **Privacy policy URL** | Google Play will not let you publish without a public HTTPS policy | `privacy.html` |
-| **`app-ads.txt`** | AdMob uses it to verify you own this app's ad inventory; unverified inventory attracts fewer bids | `app-ads.txt` |
+| **`app-ads.txt`** | AdMob uses it to verify you own this app's ad inventory; unverified inventory attracts fewer bids | `app-ads.txt` — **and** `root-domain/app-ads.txt`, which goes to a *different* repo (see step 6) |
 | **A landing page + playable demo** | somewhere to send people, and where the two files above live anyway | `index.html`, `play/` |
 
 **Before you start:** run `node scripts/build-site.mjs` from the repo root. It builds the
@@ -32,7 +32,7 @@ git init
 git add -A
 git commit -m "Siege Architect website"
 git branch -M main
-git remote add origin https://github.com/<your-github-username>/siege-architect-site.git
+git remote add origin https://github.com/anujgupta-echocode/siege-architect-site.git
 git push -u origin main
 ```
 
@@ -59,7 +59,7 @@ Wait about a minute; the page shows a green "Your site is live at…" banner whe
 Your site is at:
 
 ```
-https://<your-github-username>.github.io/siege-architect-site/
+https://anujgupta-echocode.github.io/siege-architect-site/
 ```
 
 Open all four in a **private/incognito window** — Play's reviewer is not logged in as you:
@@ -69,7 +69,7 @@ Open all four in a **private/incognito window** — Play's reviewer is not logge
 | `…/siege-architect-site/` | the landing page, with screenshots |
 | `…/siege-architect-site/privacy.html` | the privacy policy, no login prompt |
 | `…/siege-architect-site/play/` | the game boots and the main menu appears |
-| `…/siege-architect-site/app-ads.txt` | plain text, starting with `#` comments |
+| `…/siege-architect-site/app-ads.txt` | plain text, starting with a `#` comment (it will not *verify* from this path — step 6) |
 
 If `/play/` shows a blank page, the usual cause is the missing **`.nojekyll`** file: GitHub
 Pages runs Jekyll by default and silently drops files whose names begin with an underscore.
@@ -78,7 +78,7 @@ check that it actually got committed (`git ls-files | grep nojekyll`).
 
 ## Step 5 — Paste the privacy URL into the Play Console
 
-`https://<your-github-username>.github.io/siege-architect-site/privacy.html` goes into
+`https://anujgupta-echocode.github.io/siege-architect-site/privacy.html` goes into
 **both** of these — Play checks them separately:
 
 1. *App content → Privacy policy*
@@ -89,34 +89,37 @@ Also put the site's root URL into *Store settings → Store listing contact → 
 
 ## Step 6 — Give AdMob the site, and fix `app-ads.txt`
 
-1. In AdMob: *Apps → Siege Architect → App settings → **Developer website*** — enter
-   `https://<your-github-username>.github.io/siege-architect-site/`.
-2. AdMob shows you the exact line to publish, of the form
-   `google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0`.
-   The `pub-` number is your **publisher id** — the same digits that sit in the middle of
-   your AdMob application id (`ca-app-pub-`**`XXXXXXXXXXXXXXXX`**`~YYYYYYYYYY`).
-3. Open **`app-ads.txt`** in this folder, replace the placeholder line at the bottom with
-   the line AdMob gave you (leave the comments, they are legal in the format), commit and
-   push.
-4. Back in AdMob, press **Check for updates**.
+**The line is already written.** `app-ads.txt` in this folder now carries the live record
+for publisher `pub-6236130271371525`:
 
-> ### The one thing that will not work first time
+```
+google.com, pub-6236130271371525, DIRECT, f08c47fec0942fa0
+```
+
+There is nothing left to paste — but there *is* somewhere else to publish it.
+
+> ### The one thing that will not work from this repo
 >
-> Google looks for app-ads.txt at the **domain root** — `https://<domain>/app-ads.txt`. A
-> GitHub Pages **project** site serves this folder under a path, so the file ends up at
-> `…github.io/siege-architect-site/app-ads.txt` and **will not verify**.
->
-> Two ways round it, when you care enough to bother:
->
-> - **User page.** Name the repo `<your-github-username>.github.io` instead. It publishes at
->   the domain root, so `app-ads.txt` lands at `https://<your-github-username>.github.io/app-ads.txt`
->   — which does verify. The trade-off is that this repo then owns your whole GitHub Pages
->   root, and you only get one.
-> - **Your own domain.** Point any domain you own at GitHub Pages (Settings → Pages → Custom
->   domain), and set that domain as the developer website in AdMob.
->
-> None of this blocks launch. Ads serve fine without a verified app-ads.txt; you simply get
-> fewer programmatic bids, which shows up as a slightly lower eCPM.
+> Google fetches app-ads.txt from the **domain root** — `https://<domain>/app-ads.txt` — and
+> from nowhere else. A GitHub Pages **project** site serves this folder under a path, so the
+> copy here ends up at `…github.io/siege-architect-site/app-ads.txt`, which is never fetched.
+> No error appears; AdMob just keeps saying "unverified".
+
+1. Publish the second copy, **`root-domain/app-ads.txt`**, to a repo named exactly
+   **`anujgupta-echocode.github.io`** (a GitHub Pages *user* site — it is served from the
+   root). Full instructions, including why the repo name is not negotiable:
+   **`root-domain/README.md`**. The alternative is your own domain pointed at Pages.
+2. Check `https://anujgupta-echocode.github.io/app-ads.txt` in a private window — plain text,
+   HTTP 200.
+3. In AdMob: *Apps → Siege Architect → App settings → **Developer website*** — enter the
+   **root** `https://anujgupta-echocode.github.io/`, not the `/siege-architect-site/` path.
+   AdMob crawls only the root of the domain you declare.
+4. *Apps → app-ads.txt →* **Check for updates**. Verification can take ~24 hours.
+
+Keep the two copies identical — `tests/ads/config.test.ts` fails if they diverge.
+
+None of this blocks launch. Ads serve fine without a verified app-ads.txt; you simply get
+fewer programmatic bids, which shows up as a slightly lower eCPM.
 
 ---
 
@@ -133,7 +136,8 @@ hand-edited `index.html`, `app-ads.txt` and this README are never touched.
 | --- | --- | --- |
 | `index.html` | hand-written | landing page; the Play badge is a placeholder until the app is live |
 | `privacy.html` | **generated** | verbatim copy of `store/privacy-policy.html` — edit that file, not this one |
-| `app-ads.txt` | hand-written | replace the placeholder publisher id (step 6) |
+| `app-ads.txt` | hand-written | **live** — `google.com, pub-6236130271371525, DIRECT, f08c47fec0942fa0` |
+| `root-domain/` | hand-written | the same `app-ads.txt` again, for the `anujgupta-echocode.github.io` repo — the only place it verifies from (step 6) |
 | `play/` | **generated** | `vite build` output; the game runs from a sub-path because `vite.config.ts` sets `base: './'` |
 | `screenshots/` | **generated** | copied from `store/screenshots/` |
 | `icon-512.png`, `feature-graphic.png` | **generated** | copied from `store/` |
